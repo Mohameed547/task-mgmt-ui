@@ -8,6 +8,7 @@ import {
   Button,
   CircularProgress,
   Box,
+  Alert,
 } from '@mui/material';
 
 export interface DeleteTaskConfirmDialogProps {
@@ -16,6 +17,7 @@ export interface DeleteTaskConfirmDialogProps {
   onConfirm: () => void;
   taskTitle?: string;
   isDeleting?: boolean;
+  errorMessage?: string;
 }
 
 export const DeleteTaskConfirmDialog: React.FC<DeleteTaskConfirmDialogProps> = ({
@@ -24,7 +26,13 @@ export const DeleteTaskConfirmDialog: React.FC<DeleteTaskConfirmDialogProps> = (
   onConfirm,
   taskTitle = 'this task',
   isDeleting = false,
+  errorMessage,
 }) => {
+  const handleConfirm = () => {
+    if (isDeleting) return; // Prevent duplicate deletion attempts
+    onConfirm();
+  };
+
   return (
     <Dialog
       open={open}
@@ -38,6 +46,11 @@ export const DeleteTaskConfirmDialog: React.FC<DeleteTaskConfirmDialogProps> = (
         Confirm Task Deletion
       </DialogTitle>
       <DialogContent>
+        {errorMessage && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {errorMessage}
+          </Alert>
+        )}
         <DialogContentText id="delete-task-dialog-description">
           Are you sure you want to delete <strong>"{taskTitle}"</strong>? This action cannot be undone.
         </DialogContentText>
@@ -47,7 +60,7 @@ export const DeleteTaskConfirmDialog: React.FC<DeleteTaskConfirmDialogProps> = (
           Cancel
         </Button>
         <Button
-          onClick={onConfirm}
+          onClick={handleConfirm}
           color="error"
           variant="contained"
           disabled={isDeleting}
