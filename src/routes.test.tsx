@@ -20,6 +20,14 @@ describe('Router Setup', () => {
           },
         });
       }
+      if (url === '/tasks') {
+        return Promise.resolve({
+          data: {
+            status: 'success',
+            data: [],
+          },
+        });
+      }
       return Promise.reject(new Error('Not found'));
     });
   });
@@ -29,12 +37,12 @@ describe('Router Setup', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders Home Page on root route "/" for authenticated user', async () => {
+  it('renders Tasks Board Page on root route "/" for authenticated user', async () => {
     renderWithProviders(<AppRoutes />, { initialEntries: ['/'] });
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1, name: /Workspace Dashboard/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /Create Task/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /Tasks Board/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Create Task/i })).toBeInTheDocument();
     });
   });
 

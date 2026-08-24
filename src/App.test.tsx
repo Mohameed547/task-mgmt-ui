@@ -24,16 +24,29 @@ describe('App Component', () => {
 
   it('renders workspace dashboard when user is authenticated', async () => {
     tokenStorage.setToken('mock-jwt-token');
-    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
-      data: {
-        status: 'success',
-        data: { id: '1', name: 'John Doe', email: 'john@example.com' },
-      },
+    vi.spyOn(apiClient, 'get').mockImplementation((url) => {
+      if (url === '/auth/me') {
+        return Promise.resolve({
+          data: {
+            status: 'success',
+            data: { id: '1', name: 'John Doe', email: 'john@example.com' },
+          },
+        });
+      }
+      if (url === '/tasks') {
+        return Promise.resolve({
+          data: {
+            status: 'success',
+            data: [],
+          },
+        });
+      }
+      return Promise.reject(new Error('Not found'));
     });
 
     render(<App />);
     await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1, name: /Workspace Dashboard/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /Tasks Board/i })).toBeInTheDocument();
     });
   });
 });

@@ -6,6 +6,26 @@ import { apiClient } from '../../../lib/apiClient';
 import { AppRoutes } from '../../../routes/AppRoutes';
 import { tokenStorage } from '../api/authApi';
 
+const mockApiGet = (url: string) => {
+  if (url === '/auth/me') {
+    return Promise.resolve({
+      data: {
+        status: 'success',
+        data: { id: 'user-1', name: 'John Doe', email: 'john@example.com' },
+      },
+    });
+  }
+  if (url === '/tasks') {
+    return Promise.resolve({
+      data: {
+        status: 'success',
+        data: [],
+      },
+    });
+  }
+  return Promise.reject(new Error('Not found'));
+};
+
 describe('Protected Routing and Auth Persistence', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -28,35 +48,23 @@ describe('Protected Routing and Auth Persistence', () => {
 
   it('authenticated access: allows authenticated users to access protected /tasks route', async () => {
     tokenStorage.setToken('valid-jwt-token');
-
-    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
-      data: {
-        status: 'success',
-        data: { id: 'user-1', name: 'John Doe', email: 'john@example.com' },
-      },
-    });
+    vi.spyOn(apiClient, 'get').mockImplementation(mockApiGet as any);
 
     renderWithProviders(<AppRoutes />, { initialEntries: ['/tasks'] });
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /tasks board/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /tasks board/i })).toBeInTheDocument();
     });
   });
 
   it('public-only redirect: redirects authenticated users away from /login to dashboard', async () => {
     tokenStorage.setToken('valid-jwt-token');
-
-    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
-      data: {
-        status: 'success',
-        data: { id: 'user-1', name: 'John Doe', email: 'john@example.com' },
-      },
-    });
+    vi.spyOn(apiClient, 'get').mockImplementation(mockApiGet as any);
 
     renderWithProviders(<AppRoutes />, { initialEntries: ['/login'] });
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /workspace dashboard/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /tasks board/i })).toBeInTheDocument();
     });
   });
 
@@ -103,18 +111,12 @@ describe('Protected Routing and Auth Persistence', () => {
 
   it('logout behavior: logging out clears user session and redirects to /login', async () => {
     tokenStorage.setToken('valid-jwt-token');
-
-    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
-      data: {
-        status: 'success',
-        data: { id: 'user-1', name: 'John Doe', email: 'john@example.com' },
-      },
-    });
+    vi.spyOn(apiClient, 'get').mockImplementation(mockApiGet as any);
 
     renderWithProviders(<AppRoutes />, { initialEntries: ['/'] });
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /workspace dashboard/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /tasks board/i })).toBeInTheDocument();
     });
 
     // Open User Profile Menu in Header
