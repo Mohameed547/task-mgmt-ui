@@ -29,7 +29,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { MainLayout } from '../layouts/MainLayout';
 import { StatusChip } from '../components/StatusChip';
 import { PriorityChip } from '../components/PriorityChip';
-import { LoginPage, RegisterPage } from '../features/auth';
+import { LoginPage, RegisterPage, ProtectedRoute, PublicOnlyRoute } from '../features/auth';
 import type { TaskStatus, TaskPriority } from '../theme/statusPriority';
 
 interface SampleTask {
@@ -400,15 +400,24 @@ const NotFoundPage: React.FC = () => (
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/tasks" element={<TasksPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+      {/* Public-Only Routes (Redirect authenticated users to home/dashboard) */}
+      <Route element={<PublicOnlyRoute />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Route>
+
+      {/* Protected Workspace Routes (Redirect unauthenticated users to /login) */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Route>
+      </Route>
+
+      {/* Catch-all 404 Route */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };

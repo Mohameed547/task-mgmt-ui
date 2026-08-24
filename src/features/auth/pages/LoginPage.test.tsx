@@ -116,7 +116,7 @@ describe('LoginPage Component', () => {
         email: 'john@example.com',
         password: 'Secret123!',
       });
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+      expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
     });
   });
 

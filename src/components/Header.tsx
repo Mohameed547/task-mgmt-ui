@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -10,13 +10,19 @@ import {
   Tooltip,
   useTheme,
   alpha,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import Brightness4 from '@mui/icons-material/Brightness4';
 import Brightness7 from '@mui/icons-material/Brightness7';
 import NotificationsNone from '@mui/icons-material/NotificationsNone';
+import Logout from '@mui/icons-material/Logout';
 import { useAppTheme } from '../theme/ThemeContext';
+import { useAuth } from '../features/auth';
 
 export interface HeaderProps {
   onMobileMenuToggle: () => void;
@@ -25,6 +31,31 @@ export interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onMobileMenuToggle }) => {
   const theme = useTheme();
   const { mode, toggleThemeMode } = useAppTheme();
+  const { user, logout } = useAuth();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isMenuOpen = Boolean(anchorEl);
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    logout();
+  };
+
+  const userName = user?.name || 'Workspace User';
+  const userInitials = userName
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <AppBar
@@ -99,10 +130,17 @@ export const Header: React.FC<HeaderProps> = ({ onMobileMenuToggle }) => {
             </IconButton>
           </Tooltip>
 
-          {/* User Profile Avatar */}
+          {/* User Profile Avatar & Menu */}
           <Box sx={{ ml: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Tooltip title="User Profile">
-              <IconButton aria-label="User Profile" size="small">
+            <Tooltip title="User Profile Menu">
+              <IconButton
+                aria-label="User Profile"
+                size="small"
+                onClick={handleProfileMenuOpen}
+                aria-controls={isMenuOpen ? 'user-profile-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={isMenuOpen ? 'true' : undefined}
+              >
                 <Avatar
                   sx={{
                     width: 34,
@@ -112,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({ onMobileMenuToggle }) => {
                     fontWeight: 700,
                   }}
                 >
-                  JD
+                  {userInitials}
                 </Avatar>
               </IconButton>
             </Tooltip>
@@ -120,8 +158,31 @@ export const Header: React.FC<HeaderProps> = ({ onMobileMenuToggle }) => {
               variant="subtitle2"
               sx={{ display: { xs: 'none', lg: 'block' }, fontWeight: 600 }}
             >
-              John Doe
+              {userName}
             </Typography>
+
+            <Menu
+              id="user-profile-menu"
+              anchorEl={anchorEl}
+              open={isMenuOpen}
+              onClose={handleMenuClose}
+              onClick={handleMenuClose}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              slotProps={{
+                paper: {
+                  elevation: 3,
+                  sx: { minWidth: 160, mt: 1 },
+                },
+              }}
+            >
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon>
+                  <Logout fontSize="small" color="error" />
+                </ListItemIcon>
+                <ListItemText primary="Log out" primaryTypographyProps={{ color: 'error.main', fontWeight: 600 }} />
+              </MenuItem>
+            </Menu>
           </Box>
         </Box>
       </Toolbar>

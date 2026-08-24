@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -22,6 +22,7 @@ import type { ApiErrorPayload } from '../../types';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   const [email, setEmail] = useState('');
@@ -31,6 +32,8 @@ export const LoginPage: React.FC = () => {
   const [apiError, setApiError] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  const from = location.state?.from?.pathname || '/';
 
   const validate = (): boolean => {
     const newErrors: { email?: string; password?: string } = {};
@@ -68,7 +71,7 @@ export const LoginPage: React.FC = () => {
         email: email.trim(),
         password,
       });
-      navigate('/');
+      navigate(from, { replace: true });
     } catch (err: any) {
       const errorMessage =
         (err as ApiErrorPayload)?.message ||
