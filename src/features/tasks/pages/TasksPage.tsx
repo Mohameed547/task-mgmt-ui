@@ -108,6 +108,18 @@ export const TasksPage: React.FC = () => {
     }
   };
 
+  // Inline Update Handler (Status / Priority)
+  const handleUpdateTaskInline = async (id: string, payload: UpdateTaskPayload) => {
+    try {
+      await updateTaskMutation.mutateAsync({ id, payload });
+      setSnackbar({ open: true, message: 'Task updated successfully', severity: 'success' });
+    } catch (err: any) {
+      const msg = err?.message || 'Failed to update task.';
+      setSnackbar({ open: true, message: msg, severity: 'error' });
+      throw err;
+    }
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
       {/* Page Header */}
@@ -166,6 +178,8 @@ export const TasksPage: React.FC = () => {
               tasks={tasks}
               onEditTask={(task) => setEditingTask(task)}
               onDeleteTask={(task) => setDeletingTask(task)}
+              onUpdateTask={handleUpdateTaskInline}
+              onError={(msg) => setSnackbar({ open: true, message: msg, severity: 'error' })}
             />
           ) : hasActiveFilters ? (
             /* No Search / Filter Results State */
