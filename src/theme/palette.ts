@@ -3,15 +3,15 @@ import type { PaletteOptions } from '@mui/material/styles';
 export const lightPalette: PaletteOptions = {
   mode: 'light',
   primary: {
-    main: '#4f46e5',
-    light: '#6366f1',
-    dark: '#4338ca',
+    main: '#2563eb',
+    light: '#60a5fa',
+    dark: '#1d4ed8',
     contrastText: '#ffffff',
   },
   secondary: {
-    main: '#ec4899',
-    light: '#f472b6',
-    dark: '#db2777',
+    main: '#475569',
+    light: '#64748b',
+    dark: '#334155',
     contrastText: '#ffffff',
   },
   background: {
@@ -23,21 +23,33 @@ export const lightPalette: PaletteOptions = {
     secondary: '#475569',
   },
   divider: '#e2e8f0',
+  info: {
+    main: '#0284c7',
+  },
+  warning: {
+    main: '#d97706',
+  },
+  error: {
+    main: '#dc2626',
+  },
+  success: {
+    main: '#16a34a',
+  },
 };
 
 export const darkPalette: PaletteOptions = {
   mode: 'dark',
   primary: {
-    main: '#6366f1',
-    light: '#818cf8',
-    dark: '#4f46e5',
+    main: '#3b82f6',
+    light: '#93c5fd',
+    dark: '#1d4ed8',
     contrastText: '#ffffff',
   },
   secondary: {
-    main: '#f472b6',
-    light: '#fbcfe8',
-    dark: '#ec4899',
-    contrastText: '#ffffff',
+    main: '#94a3b8',
+    light: '#cbd5e1',
+    dark: '#64748b',
+    contrastText: '#0f172a',
   },
   background: {
     default: '#0f172a',
@@ -48,4 +60,16 @@ export const darkPalette: PaletteOptions = {
     secondary: '#94a3b8',
   },
   divider: '#334155',
+  info: {
+    main: '#38bdf8',
+  },
+  warning: {
+    main: '#fbbf24',
+  },
+  error: {
+    main: '#f87171',
+  },
+  success: {
+    main: '#4ade80',
+  },
 };

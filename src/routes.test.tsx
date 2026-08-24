@@ -6,13 +6,13 @@ import { renderWithProviders } from './test/testUtils';
 describe('Router Setup', () => {
   it('renders Home Page on root route "/"', () => {
     renderWithProviders(<AppRoutes />, { initialEntries: ['/'] });
-    expect(screen.getByRole('heading', { level: 1, name: /Task Management Application/i })).toBeInTheDocument();
-    expect(screen.getByText(/View Dashboard/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /Workspace Dashboard/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Create Task/i })).toBeInTheDocument();
   });
 
   it('renders Tasks Page on "/tasks" route', () => {
     renderWithProviders(<AppRoutes />, { initialEntries: ['/tasks'] });
-    expect(screen.getByRole('heading', { level: 1, name: /Tasks Dashboard/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /Tasks Board/i })).toBeInTheDocument();
   });
 
   it('renders NotFound Page on unknown route', () => {

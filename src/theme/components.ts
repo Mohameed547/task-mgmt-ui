@@ -4,11 +4,13 @@ export const components: Components<Omit<Theme, 'components'>> = {
   MuiButton: {
     styleOverrides: {
       root: {
-        borderRadius: 8,
-        padding: '8px 16px',
+        borderRadius: 6,
+        padding: '6px 16px',
+        textTransform: 'none',
+        fontWeight: 600,
         boxShadow: 'none',
         '&:hover': {
-          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+          boxShadow: '0 2px 8px rgba(37, 99, 235, 0.15)',
         },
       },
     },
@@ -16,21 +18,42 @@ export const components: Components<Omit<Theme, 'components'>> = {
   MuiCard: {
     styleOverrides: {
       root: {
-        borderRadius: 12,
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+        borderRadius: 8,
+        border: '1px solid',
+        borderColor: 'inherit',
+        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
       },
     },
   },
   MuiPaper: {
     styleOverrides: {
       rounded: {
-        borderRadius: 12,
+        borderRadius: 8,
+      },
+      elevation1: {
+        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)',
       },
     },
   },
-  MuiTextField: {
-    defaultProps: {
-      variant: 'outlined',
+  MuiChip: {
+    styleOverrides: {
+      root: {
+        borderRadius: 6,
+        fontWeight: 600,
+        fontSize: '0.75rem',
+      },
+    },
+  },
+  MuiListItemButton: {
+    styleOverrides: {
+      root: {
+        borderRadius: 6,
+        margin: '2px 8px',
+        padding: '8px 12px',
+        '&.Mui-selected': {
+          fontWeight: 600,
+        },
+      },
     },
   },
 };
