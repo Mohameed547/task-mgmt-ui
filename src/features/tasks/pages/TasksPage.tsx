@@ -3,17 +3,10 @@ import {
   Box,
   Typography,
   Chip,
-  Alert,
-  Button,
-  CircularProgress,
-  Paper,
   Snackbar,
+  Alert,
   Stack,
 } from '@mui/material';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import SearchOffIcon from '@mui/icons-material/SearchOff';
-import AddIcon from '@mui/icons-material/Add';
 import {
   useTasksQuery,
   useCreateTaskMutation,
@@ -24,6 +17,9 @@ import { TaskFilterToolbar } from '../components/TaskFilterToolbar';
 import { TaskTable } from '../components/TaskTable';
 import { TaskFormDialog } from '../components/TaskFormDialog';
 import { DeleteTaskConfirmDialog } from '../components/DeleteTaskConfirmDialog';
+import { LoadingState } from '../../../components/LoadingState';
+import { ErrorState } from '../../../components/ErrorState';
+import { EmptyState } from '../../../components/EmptyState';
 import type { Task, TaskStatus, TaskPriority, CreateTaskPayload, UpdateTaskPayload } from '../types/task.types';
 
 export const TasksPage: React.FC = () => {
@@ -116,7 +112,7 @@ export const TasksPage: React.FC = () => {
     <Box sx={{ width: '100%' }}>
       {/* Page Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-        <Stack direction="row" spacing={1.5} alignItems="center">
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
             Tasks Board
           </Typography>
@@ -146,39 +142,20 @@ export const TasksPage: React.FC = () => {
 
       {/* Initial Loading State */}
       {isLoading && (
-        <Paper
-          data-testid="tasks-loading-state"
-          sx={{
-            p: 6,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 2,
-            gap: 2,
-          }}
-        >
-          <CircularProgress size={40} />
-          <Typography color="text.secondary" variant="body2" sx={{ fontWeight: 500 }}>
-            Loading workspace tasks...
-          </Typography>
-        </Paper>
+        <Box data-testid="tasks-loading-state">
+          <LoadingState variant="skeleton" rows={5} />
+        </Box>
       )}
 
       {/* API Error State */}
       {!isLoading && isError && (
-        <Paper data-testid="tasks-error-state" sx={{ p: 4, borderRadius: 2 }}>
-          <Alert
-            severity="error"
-            action={
-              <Button color="inherit" size="small" onClick={() => refetch()} startIcon={<RefreshIcon />}>
-                Retry
-              </Button>
-            }
-          >
-            {error?.message || 'Failed to load tasks from server.'}
-          </Alert>
-        </Paper>
+        <Box data-testid="tasks-error-state">
+          <ErrorState
+            title="Unable to Load Tasks"
+            message={error?.message || 'Failed to connect to backend tasks service.'}
+            onRetry={() => refetch()}
+          />
+        </Box>
       )}
 
       {/* Successful Render & Empty State Checks */}
@@ -192,65 +169,20 @@ export const TasksPage: React.FC = () => {
             />
           ) : hasActiveFilters ? (
             /* No Search / Filter Results State */
-            <Paper
-              data-testid="tasks-no-results-state"
-              sx={{
-                p: 6,
-                textAlign: 'center',
-                borderRadius: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 1.5,
-              }}
-            >
-              <SearchOffIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                No tasks match your filters
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Try adjusting your search query, status, or priority filters.
-              </Typography>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={handleClearFilters}
-                sx={{ mt: 1, textTransform: 'none' }}
-              >
-                Clear All Filters
-              </Button>
-            </Paper>
+            <Box data-testid="tasks-no-results-state">
+              <EmptyState
+                type="no-results"
+                onAction={handleClearFilters}
+              />
+            </Box>
           ) : (
             /* Empty Task List State (New User) */
-            <Paper
-              data-testid="tasks-empty-state"
-              sx={{
-                p: 6,
-                textAlign: 'center',
-                borderRadius: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 1.5,
-              }}
-            >
-              <AssignmentIcon sx={{ fontSize: 52, color: 'primary.main', opacity: 0.8 }} />
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                No tasks in your workspace yet
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400 }}>
-                Organize your workflow, track priorities, and collaborate efficiently by creating your first task.
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={() => setIsCreateOpen(true)}
-                sx={{ mt: 1, fontWeight: 600, textTransform: 'none' }}
-              >
-                Create First Task
-              </Button>
-            </Paper>
+            <Box data-testid="tasks-empty-state">
+              <EmptyState
+                type="empty"
+                onAction={() => setIsCreateOpen(true)}
+              />
+            </Box>
           )}
         </>
       )}
