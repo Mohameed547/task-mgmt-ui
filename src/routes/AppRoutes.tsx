@@ -29,6 +29,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { MainLayout } from '../layouts/MainLayout';
 import { StatusChip } from '../components/StatusChip';
 import { PriorityChip } from '../components/PriorityChip';
+import { LoginPage } from '../features/auth';
 import type { TaskStatus, TaskPriority } from '../theme/statusPriority';
 
 interface SampleTask {
@@ -399,6 +400,7 @@ const NotFoundPage: React.FC = () => (
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      <Route path="/login" element={<LoginPage />} />
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/tasks" element={<TasksPage />} />
