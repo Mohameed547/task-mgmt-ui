@@ -55,10 +55,17 @@ describe('RegisterPage Component', () => {
   it('validates email format', () => {
     renderWithProviders(<RegisterPage />, { initialEntries: ['/register'] });
 
+    const nameInput = screen.getByRole('textbox', { name: /full name/i });
     const emailInput = screen.getByRole('textbox', { name: /email address/i });
+    const passwordInput = screen.getByLabelText(/^password/i);
+    const confirmPasswordInput = screen.getByLabelText(/^confirm password/i);
     const submitButton = screen.getByRole('button', { name: /sign up/i });
 
+    fireEvent.change(nameInput, { target: { value: 'Jane Doe' } });
     fireEvent.change(emailInput, { target: { value: 'invalidemail' } });
+    fireEvent.change(passwordInput, { target: { value: 'Secret123!' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'Secret123!' } });
+
     fireEvent.click(submitButton);
 
     expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
