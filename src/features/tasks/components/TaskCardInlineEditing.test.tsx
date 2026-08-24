@@ -25,12 +25,16 @@ describe('TaskCard & Inline Editing Components', () => {
       />
     );
 
-    expect(screen.getByRole('heading', { level: 2, name: /implement inline status editing/i })).toBeInTheDocument();
+    const titleHeading = screen.getByRole('heading', { level: 2, name: /implement inline status editing/i });
+    expect(titleHeading).toBeInTheDocument();
     expect(screen.getByText(/allow status and priority updates directly from task card/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/current status: to do/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/current priority: medium/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /edit task implement inline status editing/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /delete task implement inline status editing/i })).toBeInTheDocument();
+
+    // Click title to open details popup dialog
+    fireEvent.click(titleHeading);
+    expect(screen.getByRole('button', { name: /edit task/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /delete task/i })).toBeInTheDocument();
   });
 
   it('Status dropdown opens on click and displays available status options', async () => {

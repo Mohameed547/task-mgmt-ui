@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import { TaskCard } from './TaskCard';
+import { TaskBoard } from './TaskBoard';
 import type { Task, UpdateTaskPayload } from '../types/task.types';
 
 export interface TaskTableProps {
@@ -20,16 +20,13 @@ export const TaskTable: React.FC<TaskTableProps> = ({
 }) => {
   return (
     <Box data-testid="task-list-container" sx={{ width: '100%' }}>
-      {tasks.map((task) => (
-        <TaskCard
-          key={task._id}
-          task={task}
-          onEditTask={onEditTask}
-          onDeleteTask={onDeleteTask}
-          onUpdateTask={onUpdateTask}
-          onError={onError}
-        />
-      ))}
+      <TaskBoard
+        tasks={tasks}
+        onEditTask={onEditTask}
+        onDeleteTask={onDeleteTask}
+        onUpdateTask={onUpdateTask}
+        onError={onError}
+      />
     </Box>
   );
 };

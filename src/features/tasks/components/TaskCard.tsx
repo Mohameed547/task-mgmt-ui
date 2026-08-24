@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { TaskStatusSelect } from './TaskStatusSelect';
 import { TaskPrioritySelect } from './TaskPrioritySelect';
+import { TaskDetailsDialog } from './TaskDetailsDialog';
 import type { Task, TaskStatus, TaskPriority, UpdateTaskPayload } from '../types/task.types';
 
 export interface TaskCardProps {
@@ -35,6 +36,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const [currentPriority, setCurrentPriority] = useState<TaskPriority>(task.priority);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isUpdatingPriority, setIsUpdatingPriority] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   useEffect(() => {
     setCurrentStatus(task.status);
@@ -104,130 +106,144 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   return (
-    <Card
-      variant="outlined"
-      elevation={1}
-      data-testid={`task-card-${task._id}`}
-      sx={{
-        borderRadius: 2,
-        mb: 2,
-        transition: 'box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
-        '&:hover': {
-          boxShadow: (theme) =>
-            theme.palette.mode === 'dark'
-              ? '0 4px 16px rgba(0, 0, 0, 0.4)'
-              : '0 4px 16px rgba(0, 0, 0, 0.08)',
-          borderColor: 'primary.main',
-        },
-      }}
-    >
-      <CardContent sx={{ p: { xs: 2, sm: 2.5 }, '&:last-child': { pb: { xs: 2, sm: 2.5 } } }}>
-        {/* Header Row: Title (Left) & Due Date + Actions (Right) */}
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
-          <Typography
-            variant="h6"
-            component="h2"
-            sx={{
-              fontWeight: 700,
-              fontSize: { xs: '1.05rem', sm: '1.15rem' },
-              color: 'text.primary',
-              lineHeight: 1.3,
-              letterSpacing: '-0.01em',
-            }}
-          >
-            {task.title}
-          </Typography>
+    <>
+      <Card
+        variant="outlined"
+        elevation={1}
+        data-testid={`task-card-${task._id}`}
+        sx={{
+          borderRadius: 2,
+          mb: 2,
+          transition: 'box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
+          '&:hover': {
+            boxShadow: (theme) =>
+              theme.palette.mode === 'dark'
+                ? '0 4px 16px rgba(0, 0, 0, 0.4)'
+                : '0 4px 16px rgba(0, 0, 0, 0.08)',
+            borderColor: 'primary.main',
+          },
+        }}
+      >
+        <CardContent sx={{ p: { xs: 1.75, sm: 2 }, '&:last-child': { pb: { xs: 1.75, sm: 2 } } }}>
+          {/* Top Header Row: Title (Left) & Due Date Badge (Right) */}
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1.5 }}>
+            <Typography
+              variant="h6"
+              component="h2"
+              onClick={() => setIsDetailsOpen(true)}
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: '1rem', sm: '1.05rem' },
+                color: 'text.primary',
+                lineHeight: 1.3,
+                letterSpacing: '-0.01em',
+                wordBreak: 'break-word',
+                flex: 1,
+                cursor: 'pointer',
+                transition: 'color 0.2s ease',
+                '&:hover': {
+                  color: 'primary.main',
+                },
+              }}
+            >
+              {task.title}
+            </Typography>
 
-          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexShrink: 0 }}>
-            {/* Due Date Badge */}
+            {/* Due Date Badge - Top Right */}
             <Stack
               direction="row"
               spacing={0.75}
               alignItems="center"
               sx={{
+                flexShrink: 0,
                 bgcolor: 'action.hover',
-                px: 1.25,
-                py: 0.5,
+                px: 1,
+                py: 0.35,
                 borderRadius: 1.5,
                 color: 'text.secondary',
               }}
             >
-              <CalendarTodayIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-              <Typography variant="body2" sx={{ fontSize: '0.8125rem', fontWeight: 600 }}>
+              <CalendarTodayIcon sx={{ fontSize: 13, color: 'text.secondary' }} />
+              <Typography variant="body2" sx={{ fontSize: '0.78125rem', fontWeight: 600 }}>
                 {formatDate(task.dueDate)}
               </Typography>
             </Stack>
+          </Box>
 
-            {/* Action Buttons */}
-            <Stack direction="row" spacing={0.5}>
-              <Tooltip title="Edit task">
-                <IconButton
-                  size="small"
-                  color="primary"
-                  aria-label={`Edit task ${task.title}`}
-                  onClick={() => onEditTask(task)}
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Delete task">
-                <IconButton
-                  size="small"
-                  color="error"
-                  aria-label={`Delete task ${task.title}`}
-                  onClick={() => onDeleteTask(task)}
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-          </Stack>
-        </Box>
+          {/* Task Description (2 Lines Max with Ellipsis) */}
+          {task.description && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              onClick={() => setIsDetailsOpen(true)}
+              sx={{
+                mt: 1,
+                mb: 1,
+                fontSize: '0.85rem',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                wordBreak: 'break-word',
+                cursor: 'pointer',
+                transition: 'color 0.2s ease',
+                '&:hover': {
+                  color: 'text.primary',
+                },
+              }}
+            >
+              {task.description}
+            </Typography>
+          )}
 
-        {/* Task Description */}
-        {task.description && (
-          <Typography
-            variant="body2"
-            color="text.secondary"
+          <Divider sx={{ my: 1.25, borderColor: 'divider' }} />
+
+          {/* Footer / Controls Row: Inline Status & Inline Priority (Side-by-Side 50/50 Grid) */}
+          <Box
             sx={{
-              mt: 1,
-              mb: 1.5,
-              fontSize: '0.875rem',
-              whiteSpace: 'pre-line',
-              wordBreak: 'break-word',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 1,
+              alignItems: 'center',
             }}
+            onPointerDown={(e) => e.stopPropagation()}
           >
-            {task.description}
-          </Typography>
-        )}
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25, fontWeight: 500, fontSize: '0.75rem' }}>
+                Status
+              </Typography>
+              <TaskStatusSelect
+                status={currentStatus}
+                onChange={handleStatusChange}
+                isUpdating={isUpdatingStatus}
+              />
+            </Box>
 
-        <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
-
-        {/* Footer / Controls Row: Inline Status & Inline Priority */}
-        <Stack direction="row" spacing={2.5} sx={{ flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
-          <Box>
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25, fontWeight: 500 }}>
-              Status
-            </Typography>
-            <TaskStatusSelect
-              status={currentStatus}
-              onChange={handleStatusChange}
-              isUpdating={isUpdatingStatus}
-            />
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25, fontWeight: 500, fontSize: '0.75rem' }}>
+                Priority
+              </Typography>
+              <TaskPrioritySelect
+                priority={currentPriority}
+                onChange={handlePriorityChange}
+                isUpdating={isUpdatingPriority}
+              />
+            </Box>
           </Box>
+        </CardContent>
+      </Card>
 
-          <Box>
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25, fontWeight: 500 }}>
-              Priority
-            </Typography>
-            <TaskPrioritySelect
-              priority={currentPriority}
-              onChange={handlePriorityChange}
-              isUpdating={isUpdatingPriority}
-            />
-          </Box>
-        </Stack>
-      </CardContent>
-    </Card>
+      {/* Task Details Popup Dialog */}
+      <TaskDetailsDialog
+        task={task}
+        open={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
+        onEditTask={onEditTask}
+        onDeleteTask={onDeleteTask}
+        onUpdateTask={onUpdateTask}
+        onError={onError}
+      />
+    </>
   );
 };
