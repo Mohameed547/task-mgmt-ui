@@ -3,6 +3,7 @@ import { render, RenderOptions } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppThemeProvider } from '../theme/ThemeContext';
+import { AuthProvider } from '../features/auth';
 
 const createTestQueryClient = () =>
   new QueryClient({
@@ -22,9 +23,11 @@ export const AllTheProviders: React.FC<AllTheProvidersProps> = ({ children, init
   const queryClient = createTestQueryClient();
   return (
     <QueryClientProvider client={queryClient}>
-      <AppThemeProvider>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
-      </AppThemeProvider>
+      <AuthProvider>
+        <AppThemeProvider>
+          <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+        </AppThemeProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };
