@@ -6,6 +6,7 @@ import {
   Snackbar,
   Alert,
   Stack,
+  Pagination,
 } from '@mui/material';
 import {
   useTasksQuery,
@@ -23,7 +24,10 @@ import { EmptyState } from '../../../components/EmptyState';
 import type { Task, TaskStatus, TaskPriority, CreateTaskPayload, UpdateTaskPayload } from '../types/task.types';
 
 export const TasksPage: React.FC = () => {
-  // Filter & Search states
+  // Pagination & Filter & Search states
+  const [page, setPage] = useState(1);
+  const limit = 9;
+
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<TaskStatus | 'ALL'>('ALL');
@@ -37,14 +41,31 @@ export const TasksPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
+  // Reset page to 1 whenever search or filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter, priorityFilter]);
+
   // TanStack Query Data Fetching
   const filterParams = {
     search: debouncedSearch,
     status: statusFilter,
     priority: priorityFilter,
+    page,
+    limit,
   };
 
-  const { data: tasks = [], isLoading, isError, error, refetch } = useTasksQuery(filterParams);
+  const { data, isLoading, isError, error, refetch } = useTasksQuery(filterParams);
+
+  const tasks = data?.tasks || [];
+  const pagination = data?.pagination || { page: 1, limit: 9, total: 0, totalPages: 0 };
+
+  // Handle empty page navigation fallback (e.g., after deleting last item on page N)
+  useEffect(() => {
+    if (data?.pagination && page > data.pagination.totalPages && data.pagination.totalPages > 0) {
+      setPage(data.pagination.totalPages);
+    }
+  }, [data, page]);
 
   // TanStack Query Mutations
   const createTaskMutation = useCreateTaskMutation();
@@ -72,6 +93,7 @@ export const TasksPage: React.FC = () => {
     setDebouncedSearch('');
     setStatusFilter('ALL');
     setPriorityFilter('ALL');
+    setPage(1);
   };
 
   // Form Submission Handler (Create or Edit)
@@ -130,7 +152,7 @@ export const TasksPage: React.FC = () => {
           </Typography>
           {!isLoading && !isError && (
             <Chip
-              label={`${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'}`}
+              label={`${pagination.total} ${pagination.total === 1 ? 'task' : 'tasks'}`}
               color="primary"
               size="small"
               sx={{ fontWeight: 700, borderRadius: 1.5 }}
@@ -174,13 +196,35 @@ export const TasksPage: React.FC = () => {
       {!isLoading && !isError && (
         <>
           {tasks.length > 0 ? (
-            <TaskTable
-              tasks={tasks}
-              onEditTask={(task) => setEditingTask(task)}
-              onDeleteTask={(task) => setDeletingTask(task)}
-              onUpdateTask={handleUpdateTaskInline}
-              onError={(msg) => setSnackbar({ open: true, message: msg, severity: 'error' })}
-            />
+            <>
+              <TaskTable
+                tasks={tasks}
+                onEditTask={(task) => setEditingTask(task)}
+                onDeleteTask={(task) => setDeletingTask(task)}
+                onUpdateTask={handleUpdateTaskInline}
+                onError={(msg) => setSnackbar({ open: true, message: msg, severity: 'error' })}
+              />
+
+              {/* Server-Side Pagination Bar */}
+              <Box
+                data-testid="tasks-pagination"
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  mt: 4,
+                  mb: 2,
+                }}
+              >
+                <Pagination
+                  count={Math.max(1, pagination.totalPages)}
+                  page={page}
+                  onChange={(_e, value) => setPage(value)}
+                  color="primary"
+                  shape="rounded"
+                  size="medium"
+                />
+              </Box>
+            </>
           ) : hasActiveFilters ? (
             /* No Search / Filter Results State */
             <Box data-testid="tasks-no-results-state">

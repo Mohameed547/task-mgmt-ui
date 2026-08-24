@@ -10,12 +10,13 @@ import {
 import type {
   Task,
   TaskFilterParams,
+  PaginatedTasksData,
   CreateTaskPayload,
   UpdateTaskPayload,
 } from '../types/task.types';
 
 export const useTasksQuery = (filters?: TaskFilterParams) => {
-  return useQuery<Task[], Error>({
+  return useQuery<PaginatedTasksData, Error>({
     queryKey: TASK_QUERY_KEYS.list(filters),
     queryFn: () => getTasks(filters),
   });

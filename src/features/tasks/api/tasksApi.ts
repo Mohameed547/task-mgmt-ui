@@ -2,6 +2,7 @@ import { apiClient } from '../../../lib/apiClient';
 import type {
   Task,
   TaskFilterParams,
+  PaginatedTasksData,
   CreateTaskPayload,
   UpdateTaskPayload,
   TasksApiResponse,
@@ -16,8 +17,8 @@ export const TASK_QUERY_KEYS = {
   detail: (id: string) => [...TASK_QUERY_KEYS.details(), id] as const,
 };
 
-export const getTasks = async (filters?: TaskFilterParams): Promise<Task[]> => {
-  const params: Record<string, string> = {};
+export const getTasks = async (filters?: TaskFilterParams): Promise<PaginatedTasksData> => {
+  const params: Record<string, string | number> = {};
 
   if (filters?.search?.trim()) {
     params.search = filters.search.trim();
@@ -29,6 +30,14 @@ export const getTasks = async (filters?: TaskFilterParams): Promise<Task[]> => {
 
   if (filters?.priority && filters.priority !== 'ALL') {
     params.priority = filters.priority;
+  }
+
+  if (filters?.page) {
+    params.page = filters.page;
+  }
+
+  if (filters?.limit) {
+    params.limit = filters.limit;
   }
 
   const response = await apiClient.get<TasksApiResponse>('/tasks', { params });

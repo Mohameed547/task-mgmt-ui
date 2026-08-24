@@ -17,6 +17,20 @@ export interface TaskFilterParams {
   search?: string;
   status?: TaskStatus | 'ALL';
   priority?: TaskPriority | 'ALL';
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface PaginatedTasksData {
+  tasks: Task[];
+  pagination: PaginationMeta;
 }
 
 export interface CreateTaskPayload {
@@ -38,7 +52,7 @@ export interface UpdateTaskPayload {
 export interface TasksApiResponse {
   status: string;
   message?: string;
-  data: Task[];
+  data: PaginatedTasksData;
 }
 
 export interface TaskApiResponse {

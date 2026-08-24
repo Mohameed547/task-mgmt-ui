@@ -58,24 +58,36 @@ describe('Tasks Feature Data Layer', () => {
   });
 
   describe('Axios API Functions', () => {
-    it('getTasks: fetches tasks list with filter parameters', async () => {
+    it('getTasks: fetches tasks list with filter and pagination parameters', async () => {
+      const mockPaginatedResponse = {
+        tasks: [mockTask],
+        pagination: {
+          page: 2,
+          limit: 9,
+          total: 15,
+          totalPages: 2,
+        },
+      };
+
       vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
         data: {
           status: 'success',
-          data: [mockTask],
+          data: mockPaginatedResponse,
         },
       });
 
-      const result = await getTasks({ search: 'Data Layer', status: 'IN_PROGRESS', priority: 'HIGH' });
+      const result = await getTasks({ search: 'Data Layer', status: 'IN_PROGRESS', priority: 'HIGH', page: 2, limit: 9 });
 
       expect(apiClient.get).toHaveBeenCalledWith('/tasks', {
         params: {
           search: 'Data Layer',
           status: 'IN_PROGRESS',
           priority: 'HIGH',
+          page: 2,
+          limit: 9,
         },
       });
-      expect(result).toEqual([mockTask]);
+      expect(result).toEqual(mockPaginatedResponse);
     });
 
     it('getTaskById: fetches single task by ID', async () => {
@@ -144,22 +156,32 @@ describe('Tasks Feature Data Layer', () => {
   });
 
   describe('TanStack Query Hooks & Cache Invalidation', () => {
-    it('useTasksQuery: fetches and returns tasks list', async () => {
+    it('useTasksQuery: fetches and returns paginated tasks data', async () => {
+      const mockPaginatedResponse = {
+        tasks: [mockTask],
+        pagination: {
+          page: 1,
+          limit: 9,
+          total: 1,
+          totalPages: 1,
+        },
+      };
+
       const queryClient = createTestQueryClient();
       vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
         data: {
           status: 'success',
-          data: [mockTask],
+          data: mockPaginatedResponse,
         },
       });
 
-      const { result } = renderHook(() => useTasksQuery({ status: 'IN_PROGRESS' }), {
+      const { result } = renderHook(() => useTasksQuery({ status: 'IN_PROGRESS', page: 1, limit: 9 }), {
         wrapper: createWrapper(queryClient),
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(result.current.data).toEqual([mockTask]);
+      expect(result.current.data).toEqual(mockPaginatedResponse);
     });
 
     it('useTaskQuery: fetches and returns single task details', async () => {
