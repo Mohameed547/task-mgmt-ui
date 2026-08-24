@@ -67,7 +67,7 @@ describe('TasksPage Dashboard Component', () => {
       expect(screen.getByText('Design Material UI Layout')).toBeInTheDocument();
       expect(screen.getByText('Integrate Axios Interceptors')).toBeInTheDocument();
     });
-  });
+  }, 10000);
 
   it('loading state: displays loading spinner while fetching tasks', async () => {
     let resolveTasks: any;

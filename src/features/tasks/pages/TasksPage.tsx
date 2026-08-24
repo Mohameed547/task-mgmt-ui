@@ -143,7 +143,7 @@ export const TasksPage: React.FC = () => {
       {/* Initial Loading State */}
       {isLoading && (
         <Box data-testid="tasks-loading-state">
-          <LoadingState variant="skeleton" rows={5} />
+          <LoadingState message="Loading workspace tasks..." variant="spinner" rows={5} />
         </Box>
       )}
 
