@@ -151,55 +151,24 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               {task.title}
             </Typography>
 
-            {/* Due Date Badge & Quick Action Buttons - Top Right */}
-            <Stack direction="row" spacing={0.75} alignItems="center" sx={{ flexShrink: 0 }}>
-              <Stack
-                direction="row"
-                spacing={0.5}
-                alignItems="center"
-                sx={{
-                  bgcolor: 'action.hover',
-                  px: 1,
-                  py: 0.35,
-                  borderRadius: 1.5,
-                  color: 'text.secondary',
-                }}
-              >
-                <CalendarTodayIcon sx={{ fontSize: 13, color: 'text.secondary' }} />
-                <Typography variant="body2" sx={{ fontSize: '0.78125rem', fontWeight: 600 }}>
-                  {formatDate(task.dueDate)}
-                </Typography>
-              </Stack>
-
-              <Box onPointerDown={(e) => e.stopPropagation()} sx={{ display: 'flex', alignItems: 'center' }}>
-                <Tooltip title="Edit Task">
-                  <IconButton
-                    size="small"
-                    aria-label={`Edit task ${task.title}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEditTask(task);
-                    }}
-                    sx={{ color: 'text.secondary', p: 0.5, '&:hover': { color: 'primary.main' } }}
-                  >
-                    <EditIcon sx={{ fontSize: 18 }} />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Delete Task">
-                  <IconButton
-                    size="small"
-                    aria-label={`Delete task ${task.title}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteTask(task);
-                    }}
-                    sx={{ color: 'text.secondary', p: 0.5, '&:hover': { color: 'error.main' } }}
-                  >
-                    <DeleteIcon sx={{ fontSize: 18 }} />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+            {/* Due Date Badge - Top Right */}
+            <Stack
+              direction="row"
+              spacing={0.5}
+              alignItems="center"
+              sx={{
+                flexShrink: 0,
+                bgcolor: 'action.hover',
+                px: 1,
+                py: 0.35,
+                borderRadius: 1.5,
+                color: 'text.secondary',
+              }}
+            >
+              <CalendarTodayIcon sx={{ fontSize: 13, color: 'text.secondary' }} />
+              <Typography variant="body2" sx={{ fontSize: '0.78125rem', fontWeight: 600 }}>
+                {formatDate(task.dueDate)}
+              </Typography>
             </Stack>
           </Box>
 
@@ -245,6 +214,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                   alignItems: 'center',
                   gap: 0.75,
                   maxWidth: '100%',
+                  minWidth: 0,
                   bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'action.selected' : 'primary.50'),
                   color: 'primary.main',
                   px: 1,
@@ -260,7 +230,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                   },
                 }}
               >
-                <AttachFileIcon sx={{ fontSize: 16 }} />
+                <AttachFileIcon sx={{ fontSize: 16, flexShrink: 0 }} />
                 <Typography
                   variant="caption"
                   sx={{
@@ -270,6 +240,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
                     color: 'inherit',
+                    minWidth: 0,
+                    wordBreak: 'break-all',
                   }}
                 >
                   {task.attachment.fileName}

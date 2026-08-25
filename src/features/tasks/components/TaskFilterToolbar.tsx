@@ -78,7 +78,7 @@ export const TaskFilterToolbar: React.FC<TaskFilterToolbarProps> = ({
         </Grid>
 
         {/* Status Filter */}
-        <Grid size={{ xs: 6, sm: 3, md: 2.5 }}>
+        <Grid size={{ xs: 12, sm: 3, md: 2.5 }}>
           <TextField
             select
             fullWidth
@@ -100,7 +100,7 @@ export const TaskFilterToolbar: React.FC<TaskFilterToolbarProps> = ({
         </Grid>
 
         {/* Priority Filter */}
-        <Grid size={{ xs: 6, sm: 3, md: 2.5 }}>
+        <Grid size={{ xs: 12, sm: 3, md: 2.5 }}>
           <TextField
             select
             fullWidth

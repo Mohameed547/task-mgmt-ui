@@ -125,11 +125,12 @@ describe('Task Deletion Feature', () => {
       expect(screen.getByText('Legacy Auth Controller Cleanup')).toBeInTheDocument();
     });
 
-    // Click delete icon button on row
-    const deleteIconButton = screen.getByRole('button', {
-      name: /delete task legacy auth controller cleanup/i,
-    });
-    fireEvent.click(deleteIconButton);
+    // Open details popup modal by clicking task title
+    fireEvent.click(screen.getByText('Legacy Auth Controller Cleanup'));
+
+    // Click Delete Task button inside details dialog
+    const deleteBtnInDialog = screen.getByRole('button', { name: /^delete task$/i });
+    fireEvent.click(deleteBtnInDialog);
 
     // Confirmation dialog should open
     expect(screen.getByRole('heading', { name: /confirm task deletion/i })).toBeInTheDocument();

@@ -212,7 +212,11 @@ describe('TasksPage Dashboard Component', () => {
       expect(screen.getByText('Design Material UI Layout')).toBeInTheDocument();
     });
 
-    const deleteBtn = screen.getByRole('button', { name: /delete task design material ui layout/i });
+    // Open details modal by clicking task title
+    fireEvent.click(screen.getByText('Design Material UI Layout'));
+
+    // Click Delete Task button inside details popup modal
+    const deleteBtn = screen.getByRole('button', { name: /^delete task$/i });
     fireEvent.click(deleteBtn);
 
     expect(screen.getByRole('heading', { name: /confirm task deletion/i })).toBeInTheDocument();

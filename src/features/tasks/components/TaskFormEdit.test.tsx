@@ -121,8 +121,11 @@ describe('TaskForm Edit Task Functionality', () => {
       expect(screen.getByText('Refactor Authentication Flow')).toBeInTheDocument();
     });
 
-    // Click Edit icon on task row
-    const editBtn = screen.getByRole('button', { name: /edit task refactor authentication flow/i });
+    // Open details modal by clicking task title
+    fireEvent.click(screen.getByText('Refactor Authentication Flow'));
+
+    // Click Edit Task button inside details popup modal
+    const editBtn = screen.getByRole('button', { name: /^edit task$/i });
     fireEvent.click(editBtn);
 
     // Edit modal title heading should appear

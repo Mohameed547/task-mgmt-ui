@@ -28,7 +28,7 @@ export const MainLayout: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: 'background.default' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', backgroundColor: 'background.default' }}>
       {/* Sidebar Navigation */}
       <SidebarNav
         mobileOpen={mobileOpen}
@@ -43,7 +43,9 @@ export const MainLayout: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           flexGrow: 1,
-          width: { md: `calc(100% - ${desktopCollapsed ? 68 : 260}px)` },
+          width: { xs: '100%', md: `calc(100% - ${desktopCollapsed ? 68 : 260}px)` },
+          maxWidth: '100%',
+          minWidth: 0,
           minHeight: '100vh',
           transition: 'width 0.2s ease-in-out',
         }}
