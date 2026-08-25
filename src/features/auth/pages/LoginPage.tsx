@@ -18,7 +18,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import LockOutlined from '@mui/icons-material/LockOutlined';
 import { useAuth } from '../context/AuthContext';
-import type { ApiErrorPayload } from '../../types';
+import { getErrorMessage } from '../../../lib/errorUtils';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -72,11 +72,11 @@ export const LoginPage: React.FC = () => {
         password,
       });
       navigate(from, { replace: true });
-    } catch (err: any) {
-      const errorMessage =
-        (err as ApiErrorPayload)?.message ||
-        err?.message ||
-        'Failed to log in. Please check your credentials.';
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(
+        err,
+        'Failed to log in. Please check your credentials.'
+      );
       setApiError(errorMessage);
     } finally {
       setIsSubmitting(false);

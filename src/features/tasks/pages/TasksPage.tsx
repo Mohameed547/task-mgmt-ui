@@ -21,6 +21,7 @@ import { DeleteTaskConfirmDialog } from '../components/DeleteTaskConfirmDialog';
 import { LoadingState } from '../../../components/LoadingState';
 import { ErrorState } from '../../../components/ErrorState';
 import { EmptyState } from '../../../components/EmptyState';
+import { getErrorMessage } from '../../../lib/errorUtils';
 import type { Task, TaskStatus, TaskPriority, CreateTaskPayload, UpdateTaskPayload } from '../types/task.types';
 
 export const TasksPage: React.FC = () => {
@@ -111,8 +112,8 @@ export const TasksPage: React.FC = () => {
         setIsCreateOpen(false);
         setSnackbar({ open: true, message: 'Task created successfully', severity: 'success' });
       }
-    } catch (err: any) {
-      const msg = err?.message || 'Operation failed. Please try again.';
+    } catch (err: unknown) {
+      const msg = getErrorMessage(err, 'Operation failed. Please try again.');
       setSnackbar({ open: true, message: msg, severity: 'error' });
     }
   };
@@ -124,8 +125,8 @@ export const TasksPage: React.FC = () => {
       await deleteTaskMutation.mutateAsync(deletingTask._id);
       setDeletingTask(null);
       setSnackbar({ open: true, message: 'Task deleted successfully', severity: 'success' });
-    } catch (err: any) {
-      const msg = err?.message || 'Failed to delete task.';
+    } catch (err: unknown) {
+      const msg = getErrorMessage(err, 'Failed to delete task.');
       setSnackbar({ open: true, message: msg, severity: 'error' });
     }
   };
@@ -135,8 +136,8 @@ export const TasksPage: React.FC = () => {
     try {
       await updateTaskMutation.mutateAsync({ id, payload });
       setSnackbar({ open: true, message: 'Task updated successfully', severity: 'success' });
-    } catch (err: any) {
-      const msg = err?.message || 'Failed to update task.';
+    } catch (err: unknown) {
+      const msg = getErrorMessage(err, 'Failed to update task.');
       setSnackbar({ open: true, message: msg, severity: 'error' });
       throw err;
     }

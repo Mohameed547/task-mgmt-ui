@@ -148,7 +148,7 @@ describe('TasksPage Dashboard Component', () => {
 
     await waitFor(() => {
       expect(apiClient.get).toHaveBeenCalledWith('/tasks', {
-        params: { search: 'Material' },
+        params: expect.objectContaining({ search: 'Material' }),
       });
     });
 

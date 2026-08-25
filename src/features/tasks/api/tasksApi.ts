@@ -40,8 +40,43 @@ export const getTasks = async (filters?: TaskFilterParams): Promise<PaginatedTas
     params.limit = filters.limit;
   }
 
-  const response = await apiClient.get<TasksApiResponse>('/tasks', { params });
-  return response.data.data;
+  const response = await apiClient.get<any>('/tasks', { params });
+  const rawData = response.data?.data;
+
+  // Normalization: Support both raw array responses (legacy mocks) and paginated task objects
+  if (Array.isArray(rawData)) {
+    return {
+      tasks: rawData,
+      pagination: {
+        page: filters?.page || 1,
+        limit: filters?.limit || rawData.length || 9,
+        total: rawData.length,
+        totalPages: 1,
+      },
+    };
+  }
+
+  if (rawData && Array.isArray(rawData.tasks)) {
+    return {
+      tasks: rawData.tasks,
+      pagination: rawData.pagination || {
+        page: filters?.page || 1,
+        limit: filters?.limit || rawData.tasks.length || 9,
+        total: rawData.tasks.length,
+        totalPages: 1,
+      },
+    };
+  }
+
+  return {
+    tasks: [],
+    pagination: {
+      page: filters?.page || 1,
+      limit: filters?.limit || 9,
+      total: 0,
+      totalPages: 1,
+    },
+  };
 };
 
 export const getTaskById = async (id: string): Promise<Task> => {

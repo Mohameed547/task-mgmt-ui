@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { formatFileSize } from '../../../utils/fileUtils';
+import { getErrorMessage } from '../../../lib/errorUtils';
 import { TaskStatusSelect } from './TaskStatusSelect';
 import { TaskPrioritySelect } from './TaskPrioritySelect';
 import type { Task, TaskStatus, TaskPriority, UpdateTaskPayload } from '../types/task.types';
@@ -62,9 +63,9 @@ export const TaskDetailsDialog: React.FC<TaskDetailsDialogProps> = ({
     if (!onUpdateTask || newStatus === task.status) return;
     try {
       await onUpdateTask(task._id, { status: newStatus });
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (onError) {
-        onError(err?.message || 'Failed to update status.');
+        onError(getErrorMessage(err, 'Failed to update status.'));
       }
     }
   };
@@ -73,9 +74,9 @@ export const TaskDetailsDialog: React.FC<TaskDetailsDialogProps> = ({
     if (!onUpdateTask || newPriority === task.priority) return;
     try {
       await onUpdateTask(task._id, { priority: newPriority });
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (onError) {
-        onError(err?.message || 'Failed to update priority.');
+        onError(getErrorMessage(err, 'Failed to update priority.'));
       }
     }
   };

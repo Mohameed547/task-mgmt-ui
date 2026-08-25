@@ -15,8 +15,20 @@ export const tokenStorage = {
   removeToken: (): void => localStorage.removeItem(TOKEN_KEY),
 };
 
-const normalizeUser = (userData: any): AuthUser => {
-  if (!userData) return userData;
+interface RawUser {
+  id?: string;
+  _id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+const normalizeUser = (userData: RawUser | null | undefined): AuthUser => {
+  if (!userData) {
+    return { id: '', name: '', email: '' };
+  }
   return {
     id: userData.id || userData._id || '',
     name: userData.name || '',

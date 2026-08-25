@@ -16,6 +16,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { TaskStatusSelect } from './TaskStatusSelect';
 import { TaskPrioritySelect } from './TaskPrioritySelect';
 import { TaskDetailsDialog } from './TaskDetailsDialog';
+import { getErrorMessage } from '../../../lib/errorUtils';
 import type { Task, TaskStatus, TaskPriority, UpdateTaskPayload } from '../types/task.types';
 
 export interface TaskCardProps {
@@ -73,9 +74,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       if (onUpdateTask) {
         await onUpdateTask(task._id, { status: newStatus });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setCurrentStatus(previousStatus); // Rollback on failure
-      const errorMsg = err?.message || 'Failed to update status. Previous status restored.';
+      const errorMsg = getErrorMessage(err, 'Failed to update status. Previous status restored.');
       if (onError) {
         onError(errorMsg);
       }
@@ -95,9 +96,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       if (onUpdateTask) {
         await onUpdateTask(task._id, { priority: newPriority });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setCurrentPriority(previousPriority); // Rollback on failure
-      const errorMsg = err?.message || 'Failed to update priority. Previous priority restored.';
+      const errorMsg = getErrorMessage(err, 'Failed to update priority. Previous priority restored.');
       if (onError) {
         onError(errorMsg);
       }
@@ -150,24 +151,55 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               {task.title}
             </Typography>
 
-            {/* Due Date Badge - Top Right */}
-            <Stack
-              direction="row"
-              spacing={0.75}
-              alignItems="center"
-              sx={{
-                flexShrink: 0,
-                bgcolor: 'action.hover',
-                px: 1,
-                py: 0.35,
-                borderRadius: 1.5,
-                color: 'text.secondary',
-              }}
-            >
-              <CalendarTodayIcon sx={{ fontSize: 13, color: 'text.secondary' }} />
-              <Typography variant="body2" sx={{ fontSize: '0.78125rem', fontWeight: 600 }}>
-                {formatDate(task.dueDate)}
-              </Typography>
+            {/* Due Date Badge & Quick Action Buttons - Top Right */}
+            <Stack direction="row" spacing={0.75} alignItems="center" sx={{ flexShrink: 0 }}>
+              <Stack
+                direction="row"
+                spacing={0.5}
+                alignItems="center"
+                sx={{
+                  bgcolor: 'action.hover',
+                  px: 1,
+                  py: 0.35,
+                  borderRadius: 1.5,
+                  color: 'text.secondary',
+                }}
+              >
+                <CalendarTodayIcon sx={{ fontSize: 13, color: 'text.secondary' }} />
+                <Typography variant="body2" sx={{ fontSize: '0.78125rem', fontWeight: 600 }}>
+                  {formatDate(task.dueDate)}
+                </Typography>
+              </Stack>
+
+              <Box onPointerDown={(e) => e.stopPropagation()} sx={{ display: 'flex', alignItems: 'center' }}>
+                <Tooltip title="Edit Task">
+                  <IconButton
+                    size="small"
+                    aria-label={`Edit task ${task.title}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditTask(task);
+                    }}
+                    sx={{ color: 'text.secondary', p: 0.5, '&:hover': { color: 'primary.main' } }}
+                  >
+                    <EditIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Delete Task">
+                  <IconButton
+                    size="small"
+                    aria-label={`Delete task ${task.title}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteTask(task);
+                    }}
+                    sx={{ color: 'text.secondary', p: 0.5, '&:hover': { color: 'error.main' } }}
+                  >
+                    <DeleteIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </Stack>
           </Box>
 

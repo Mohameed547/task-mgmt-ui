@@ -305,7 +305,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
                 borderRadius: 2,
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 bgcolor: 'background.paper',
               }}
             >
@@ -346,7 +346,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
                 borderRadius: 2,
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 bgcolor: 'background.paper',
               }}
             >

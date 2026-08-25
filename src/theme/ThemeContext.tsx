@@ -23,10 +23,28 @@ interface AppThemeProviderProps {
 }
 
 export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) => {
-  const [mode, setMode] = useState<PaletteMode>('light');
+  const [mode, setMode] = useState<PaletteMode>(() => {
+    try {
+      const savedMode = localStorage.getItem('theme_mode');
+      if (savedMode === 'dark' || savedMode === 'light') {
+        return savedMode;
+      }
+    } catch {
+      // Fallback if localStorage is restricted
+    }
+    return 'light';
+  });
 
   const toggleThemeMode = () => {
-    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    setMode((prevMode) => {
+      const newMode = prevMode === 'light' ? 'dark' : 'light';
+      try {
+        localStorage.setItem('theme_mode', newMode);
+      } catch {
+        // Fallback
+      }
+      return newMode;
+    });
   };
 
   const theme = useMemo(

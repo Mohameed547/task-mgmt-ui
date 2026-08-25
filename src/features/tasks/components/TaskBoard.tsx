@@ -13,6 +13,7 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Box, Grid } from '@mui/material';
 import { TaskColumn } from './TaskColumn';
 import { TaskCard } from './TaskCard';
+import { getErrorMessage } from '../../../lib/errorUtils';
 import type { Task, TaskStatus, UpdateTaskPayload } from '../types/task.types';
 
 export interface TaskBoardProps {
@@ -112,8 +113,8 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
     if (onUpdateTask) {
       try {
         await onUpdateTask(draggedTask._id, { status: targetStatus });
-      } catch (err: any) {
-        const errorMsg = err?.message || 'Failed to update task status via drag and drop.';
+      } catch (err: unknown) {
+        const errorMsg = getErrorMessage(err, 'Failed to update task status via drag and drop.');
         if (onError) {
           onError(errorMsg);
         }
@@ -131,15 +132,13 @@ export const TaskBoard: React.FC<TaskBoardProps> = ({
         data-testid="task-board"
         sx={{
           width: '100%',
-          overflowX: { xs: 'auto', md: 'visible' },
-          pb: { xs: 2, md: 0 },
         }}
       >
         <Grid
           container
           spacing={2.5}
           sx={{
-            minWidth: { xs: 880, md: '100%' },
+            width: '100%',
             alignItems: 'stretch',
           }}
         >

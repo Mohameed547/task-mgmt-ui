@@ -18,7 +18,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import PersonAddOutlined from '@mui/icons-material/PersonAddOutlined';
 import { useAuth } from '../context/AuthContext';
-import type { ApiErrorPayload } from '../../types';
+import { getErrorMessage } from '../../../lib/errorUtils';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -95,11 +95,8 @@ export const RegisterPage: React.FC = () => {
         password,
       });
       setIsSuccess(true);
-    } catch (err: any) {
-      const errorMessage =
-        (err as ApiErrorPayload)?.message ||
-        err?.message ||
-        'Registration failed. Please try again.';
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err, 'Registration failed. Please try again.');
       setApiError(errorMessage);
     } finally {
       setIsSubmitting(false);

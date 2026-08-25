@@ -58,7 +58,7 @@ export const TaskColumn: React.FC<TaskColumnProps> = ({
         transition: 'background-color 0.2s ease, border-color 0.2s ease',
         display: 'flex',
         flexDirection: 'column',
-        minHeight: 450,
+        minHeight: { xs: 200, md: 450 },
         height: '100%',
       }}
     >
