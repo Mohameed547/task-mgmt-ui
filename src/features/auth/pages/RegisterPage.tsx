@@ -95,6 +95,9 @@ export const RegisterPage: React.FC = () => {
         password,
       });
       setIsSuccess(true);
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 2000);
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Registration failed. Please try again.');
       setApiError(errorMessage);
@@ -156,11 +159,11 @@ export const RegisterPage: React.FC = () => {
                   onClick={() => navigate('/login')}
                   sx={{ fontWeight: 600 }}
                 >
-                  Log In
+                  Log In Now
                 </Button>
               }
             >
-              Account created successfully! You can now log in.
+              Account created successfully! Redirecting to login...
             </Alert>
           )}
 

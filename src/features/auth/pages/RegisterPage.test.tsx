@@ -158,7 +158,7 @@ describe('RegisterPage Component', () => {
         email: 'jane@example.com',
         password: 'Password123!',
       });
-      expect(screen.getByText(/account created successfully!/i)).toBeInTheDocument();
+      expect(screen.getByText(/account created successfully! redirecting to login\.\.\./i)).toBeInTheDocument();
     });
   });
 

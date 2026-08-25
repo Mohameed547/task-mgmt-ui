@@ -179,6 +179,12 @@ npm test
 
 ---
 
+## Architectural Decisions & Scope Notes
+
+- **Direct Registration & Instant Login Redirection**: Email-based OTP verification during user registration was intentionally excluded from the architecture. Deploying applications on free-tier cloud hosting services (e.g. Render, Railway, Vercel) often blocks outbound SMTP email ports (25/587/465) or results in dropped transactional messages. Instead, upon successful registration, the application displays a clear 2-second success confirmation banner before automatically redirecting the user to `/login` for seamless access.
+
+---
+
 ## AI-Assisted Development Disclosure
 
 AI-assisted development tools were used during implementation for development assistance, component architectural suggestions, UI layout styling, documentation support, and test generation ideas. All generated code was manually reviewed, refined, tested, and integrated.
