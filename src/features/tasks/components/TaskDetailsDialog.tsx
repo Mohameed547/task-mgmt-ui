@@ -16,6 +16,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import { formatFileSize } from '../../../utils/fileUtils';
 import { TaskStatusSelect } from './TaskStatusSelect';
 import { TaskPrioritySelect } from './TaskPrioritySelect';
 import type { Task, TaskStatus, TaskPriority, UpdateTaskPayload } from '../types/task.types';
@@ -101,7 +103,7 @@ export const TaskDetailsDialog: React.FC<TaskDetailsDialogProps> = ({
         sx={{
           display: 'flex',
           alignItems: 'flex-start',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           pr: 6,
           pb: 1,
         }}
@@ -179,6 +181,45 @@ export const TaskDetailsDialog: React.FC<TaskDetailsDialogProps> = ({
             </Typography>
           )}
         </Box>
+
+        {/* Attachment Section */}
+        {task.attachment && (
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              sx={{ fontWeight: 700, mb: 0.75, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}
+            >
+              Attachment
+            </Typography>
+            <Box
+              component="a"
+              href={task.attachment.fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 1,
+                bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'action.selected' : 'primary.50'),
+                px: 1.5,
+                py: 0.75,
+                borderRadius: 2,
+                color: 'primary.main',
+                textDecoration: 'none',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                '&:hover': { textDecoration: 'underline' },
+              }}
+            >
+              <AttachFileIcon sx={{ fontSize: 18 }} />
+              <span>{task.attachment.fileName}</span>
+              <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+                ({formatFileSize(task.attachment.fileSize)})
+              </Typography>
+            </Box>
+          </Box>
+        )}
 
         <Divider sx={{ my: 2.5 }} />
 

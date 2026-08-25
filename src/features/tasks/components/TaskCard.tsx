@@ -12,6 +12,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { TaskStatusSelect } from './TaskStatusSelect';
 import { TaskPrioritySelect } from './TaskPrioritySelect';
 import { TaskDetailsDialog } from './TaskDetailsDialog';
@@ -195,6 +196,54 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             >
               {task.description}
             </Typography>
+          )}
+
+          {/* Task Attachment Badge / Link */}
+          {task.attachment && (
+            <Box sx={{ mt: 1, mb: 1 }}>
+              <Box
+                component="a"
+                href={task.attachment.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                data-testid={`task-attachment-link-${task._id}`}
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  maxWidth: '100%',
+                  bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'action.selected' : 'primary.50'),
+                  color: 'primary.main',
+                  px: 1,
+                  py: 0.5,
+                  borderRadius: 1.5,
+                  textDecoration: 'none',
+                  fontSize: '0.8125rem',
+                  fontWeight: 600,
+                  transition: 'background-color 0.2s ease',
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                <AttachFileIcon sx={{ fontSize: 16 }} />
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '0.8125rem',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    color: 'inherit',
+                  }}
+                >
+                  {task.attachment.fileName}
+                </Typography>
+              </Box>
+            </Box>
           )}
 
           <Divider sx={{ my: 1.25, borderColor: 'divider' }} />

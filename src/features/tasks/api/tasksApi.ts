@@ -50,11 +50,53 @@ export const getTaskById = async (id: string): Promise<Task> => {
 };
 
 export const createTask = async (payload: CreateTaskPayload): Promise<Task> => {
+  if (payload.attachment) {
+    const formData = new FormData();
+    formData.append('title', payload.title);
+    if (payload.description) {
+      formData.append('description', payload.description);
+    }
+    if (payload.status) {
+      formData.append('status', payload.status);
+    }
+    if (payload.priority) {
+      formData.append('priority', payload.priority);
+    }
+    if (payload.dueDate) {
+      formData.append('dueDate', payload.dueDate);
+    }
+    formData.append('attachment', payload.attachment);
+
+    const response = await apiClient.post<TaskApiResponse>('/tasks', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.data;
+  }
+
   const response = await apiClient.post<TaskApiResponse>('/tasks', payload);
   return response.data.data;
 };
 
 export const updateTask = async (id: string, payload: UpdateTaskPayload): Promise<Task> => {
+  if (payload.attachment) {
+    const formData = new FormData();
+    if (payload.title) formData.append('title', payload.title);
+    if (payload.description !== undefined) formData.append('description', payload.description);
+    if (payload.status) formData.append('status', payload.status);
+    if (payload.priority) formData.append('priority', payload.priority);
+    if (payload.dueDate) formData.append('dueDate', payload.dueDate);
+    formData.append('attachment', payload.attachment);
+
+    const response = await apiClient.patch<TaskApiResponse>(`/tasks/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.data;
+  }
+
   const response = await apiClient.patch<TaskApiResponse>(`/tasks/${id}`, payload);
   return response.data.data;
 };

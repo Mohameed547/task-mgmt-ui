@@ -7,7 +7,15 @@ import {
   Button,
   CircularProgress,
   Alert,
+  Typography,
+  Paper,
+  IconButton,
+  FormHelperText,
 } from '@mui/material';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { formatFileSize } from '../../../utils/fileUtils';
 import type { Task, TaskStatus, TaskPriority, CreateTaskPayload, UpdateTaskPayload } from '../types/task.types';
 
 export interface TaskFormErrors {
@@ -16,6 +24,7 @@ export interface TaskFormErrors {
   status?: string;
   priority?: string;
   dueDate?: string;
+  attachment?: string;
   apiError?: string;
 }
 
@@ -30,6 +39,8 @@ export interface TaskFormProps {
 
 const VALID_STATUSES: TaskStatus[] = ['TODO', 'IN_PROGRESS', 'DONE'];
 const VALID_PRIORITIES: TaskPriority[] = ['LOW', 'MEDIUM', 'HIGH'];
+const ALLOWED_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg', '.doc', '.docx'];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export const TaskForm: React.FC<TaskFormProps> = ({
   initialValues,
@@ -46,6 +57,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   const [status, setStatus] = useState<TaskStatus>('TODO');
   const [priority, setPriority] = useState<TaskPriority>('MEDIUM');
   const [dueDate, setDueDate] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<TaskFormErrors>({});
 
   useEffect(() => {
@@ -66,8 +78,44 @@ export const TaskForm: React.FC<TaskFormProps> = ({
       setPriority('MEDIUM');
       setDueDate('');
     }
+    setSelectedFile(null);
     setErrors({});
   }, [initialValues]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    const fileExt = '.' + file.name.split('.').pop()?.toLowerCase();
+
+    if (!ALLOWED_EXTENSIONS.includes(fileExt)) {
+      setErrors((prev) => ({
+        ...prev,
+        attachment: 'Invalid file type. Allowed file types: PDF, PNG, JPG, JPEG, DOC, DOCX',
+      }));
+      e.target.value = '';
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      setErrors((prev) => ({
+        ...prev,
+        attachment: 'File size cannot exceed 5 MB',
+      }));
+      e.target.value = '';
+      return;
+    }
+
+    setSelectedFile(file);
+    setErrors((prev) => ({ ...prev, attachment: undefined }));
+    e.target.value = '';
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    setErrors((prev) => ({ ...prev, attachment: undefined }));
+  };
 
   const validate = (): boolean => {
     const newErrors: TaskFormErrors = {};
@@ -102,7 +150,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
       }
     }
 
-    setErrors(newErrors);
+    setErrors((prev) => ({ ...prev, ...newErrors }));
     return Object.keys(newErrors).length === 0;
   };
 
@@ -112,12 +160,13 @@ export const TaskForm: React.FC<TaskFormProps> = ({
 
     if (!validate()) return;
 
-    const payload = {
+    const payload: CreateTaskPayload = {
       title: title.trim(),
       description: description.trim() || undefined,
       status,
       priority,
       dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+      attachment: selectedFile || undefined,
     };
 
     onSubmit(payload);
@@ -237,6 +286,153 @@ export const TaskForm: React.FC<TaskFormProps> = ({
               },
             }}
           />
+        </Grid>
+
+        {/* Attachment Section (Create & Edit Task) */}
+        <Grid size={{ xs: 12 }}>
+          <Typography
+            variant="subtitle2"
+            sx={{ fontWeight: 600, mb: 0.75, color: 'text.secondary' }}
+          >
+            Attachment (Optional)
+          </Typography>
+
+          {selectedFile ? (
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 1.5,
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justify: 'space-between',
+                bgcolor: 'background.paper',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
+                <InsertDriveFileIcon color="primary" />
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {selectedFile.name} {isEditing && '(New)'}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {formatFileSize(selectedFile.size)}
+                  </Typography>
+                </Box>
+              </Box>
+              <IconButton
+                aria-label="Remove attachment"
+                onClick={handleRemoveFile}
+                disabled={isSubmitting}
+                size="small"
+                color="error"
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Paper>
+          ) : initialValues?.attachment ? (
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 1.5,
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justify: 'space-between',
+                bgcolor: 'background.paper',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
+                <InsertDriveFileIcon color="primary" />
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {initialValues.attachment.fileName}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {formatFileSize(initialValues.attachment.fileSize)}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <input
+                  type="file"
+                  id="task-attachment-replace-input"
+                  style={{ display: 'none' }}
+                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                  onChange={handleFileSelect}
+                  disabled={isSubmitting}
+                />
+                <label htmlFor="task-attachment-replace-input">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    size="small"
+                    startIcon={<AttachFileIcon />}
+                    disabled={isSubmitting}
+                    sx={{ textTransform: 'none', fontWeight: 600, fontSize: '0.75rem' }}
+                  >
+                    Replace
+                  </Button>
+                </label>
+              </Box>
+            </Paper>
+          ) : (
+            <Box
+              sx={{
+                border: '1px dashed',
+                borderColor: errors.attachment ? 'error.main' : 'divider',
+                borderRadius: 2,
+                p: 2,
+                textAlign: 'center',
+                bgcolor: 'action.hover',
+              }}
+            >
+              <input
+                type="file"
+                id="task-attachment-input"
+                style={{ display: 'none' }}
+                accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                onChange={handleFileSelect}
+                disabled={isSubmitting}
+              />
+              <label htmlFor="task-attachment-input">
+                <Button
+                  variant="outlined"
+                  component="span"
+                  startIcon={<AttachFileIcon />}
+                  disabled={isSubmitting}
+                  sx={{ textTransform: 'none', fontWeight: 600 }}
+                >
+                  Attach File
+                </Button>
+              </label>
+              <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1 }}>
+                PDF, PNG, JPG, DOC, DOCX — Maximum size: 5 MB
+              </Typography>
+            </Box>
+          )}
+
+          {errors.attachment && (
+            <FormHelperText error sx={{ mt: 0.75 }}>
+              {errors.attachment}
+            </FormHelperText>
+          )}
         </Grid>
       </Grid>
 

@@ -1,6 +1,14 @@
 export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'DONE';
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
 
+export interface TaskAttachment {
+  fileName: string;
+  fileUrl: string;
+  publicId: string;
+  mimeType: string;
+  fileSize: number;
+}
+
 export interface Task {
   _id: string;
   title: string;
@@ -8,6 +16,7 @@ export interface Task {
   status: TaskStatus;
   priority: TaskPriority;
   dueDate?: string;
+  attachment?: TaskAttachment;
   user?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -39,6 +48,7 @@ export interface CreateTaskPayload {
   status?: TaskStatus;
   priority?: TaskPriority;
   dueDate?: string;
+  attachment?: File;
 }
 
 export interface UpdateTaskPayload {
@@ -47,6 +57,7 @@ export interface UpdateTaskPayload {
   status?: TaskStatus;
   priority?: TaskPriority;
   dueDate?: string;
+  attachment?: File;
 }
 
 export interface TasksApiResponse {
